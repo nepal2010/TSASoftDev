@@ -35,8 +35,6 @@ public class MainActivity extends AppCompatActivity {
     Button fromDateButton, toDateButton;
     boolean isSelectingFromDate, isSelectingToDate = false;
     CalendarView dateSelectorCaleder;
-    ColorInt selectedColor, unselectedColor;
-    Group underCalendarGroup;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,7 +67,6 @@ public class MainActivity extends AppCompatActivity {
         dateSelectorCaleder = findViewById(R.id.caledarView);
         dateSelectorCaleder.setVisibility(View.INVISIBLE);
 
-        underCalendarGroup = findViewById(R.id.underCalendarGroup);
         fromDateButton = findViewById(R.id.fromDate);
         fromDateButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
                 toDateButton.setBackgroundColor(Color.GRAY);
 
                 dateSelectorCaleder.setVisibility(View.VISIBLE);
-
+                setVisibilityOfObjectsUnderCalendar(false);
             }
         });
 
@@ -97,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
                 fromDateButton.setBackgroundColor(Color.GRAY);
 
                 dateSelectorCaleder.setVisibility(View.VISIBLE);
+                setVisibilityOfObjectsUnderCalendar(false);
             }
         });
 
@@ -115,10 +113,27 @@ public class MainActivity extends AppCompatActivity {
                 toDateButton.setBackgroundColor(Color.GRAY);
 
                 dateSelectorCaleder.setVisibility(View.INVISIBLE);
+                setVisibilityOfObjectsUnderCalendar(true);
             }
         });
     }
-
+    void setVisibilityOfObjectsUnderCalendar(boolean b){
+        if(b){
+            findViewById(R.id.Startingat).setVisibility(View.VISIBLE);
+            hourSpinner.setVisibility(View.VISIBLE);
+            minuteSpinner.setVisibility(View.VISIBLE);
+            timeHemisphereSpinner.setVisibility(View.VISIBLE);
+            findViewById(R.id.textView4).setVisibility(View.VISIBLE);
+            frequencySpinner.setVisibility(View.VISIBLE);
+        }else{
+            findViewById(R.id.Startingat).setVisibility(View.GONE);
+            hourSpinner.setVisibility(View.GONE);
+            minuteSpinner.setVisibility(View.GONE);
+            timeHemisphereSpinner.setVisibility(View.GONE);
+            findViewById(R.id.textView4).setVisibility(View.GONE);
+            frequencySpinner.setVisibility(View.GONE);
+        }
+    }
 
 }
 

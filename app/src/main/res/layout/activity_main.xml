@@ -12,7 +12,6 @@
         android:layout_width="wrap_content"
         android:layout_height="30dp"
         android:layout_gravity="center_horizontal"
-        android:textAlignment="viewEnd"
         app:layout_constraintBottom_toBottomOf="@+id/minuteDropDown"
         app:layout_constraintEnd_toEndOf="@+id/space"
         app:layout_constraintHorizontal_bias="0.355"
@@ -158,13 +157,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/minuteDropDown"
         app:layout_constraintVertical_bias="0.758" />
-
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/underCalendarGroup"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="visible"
-        app:constraint_referenced_ids="textView4,frequencySpinner,hourDropDown,textView,minuteDropDown,AMPMDropDown" />
 
     <TextView
         android:id="@+id/Startingat"
