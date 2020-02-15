@@ -1,5 +1,6 @@
 package com.example.pillreminder;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.opengl.Visibility;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.text.Layout;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,110 +32,14 @@ import java.security.acl.Group;
 import java.util.Enumeration;
 
 public class MainActivity extends AppCompatActivity {
-    Spinner hourSpinner, minuteSpinner, timeHemisphereSpinner, frequencySpinner;
-    ArrayAdapter<CharSequence> adapter;
-    Button fromDateButton, toDateButton;
-    boolean isSelectingFromDate, isSelectingToDate = false;
-    CalendarView dateSelectorCaleder;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        timeHemisphereSpinner = findViewById(R.id.AMPMDropDown);
-        adapter = ArrayAdapter.createFromResource(this,
-                R.array.timeHemisphere_array, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        timeHemisphereSpinner.setAdapter(adapter);
 
-        hourSpinner = findViewById(R.id.hourDropDown);
-        adapter = ArrayAdapter.createFromResource(this,
-                R.array.hours_array, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        hourSpinner.setAdapter(adapter);
-
-        minuteSpinner = findViewById(R.id.minuteDropDown);
-        adapter = ArrayAdapter.createFromResource(this,
-                R.array.minutes_array, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        minuteSpinner.setAdapter(adapter);
-
-        frequencySpinner = findViewById(R.id.frequencySpinner);
-        adapter = ArrayAdapter.createFromResource(this,
-                R.array.frequency_array, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        frequencySpinner.setAdapter(adapter);
-
-        dateSelectorCaleder = findViewById(R.id.caledarView);
-        dateSelectorCaleder.setVisibility(View.INVISIBLE);
-
-        fromDateButton = findViewById(R.id.fromDate);
-        fromDateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                isSelectingFromDate = true;
-                fromDateButton.setBackgroundColor(Color.GREEN);
-
-                isSelectingToDate = false;
-                toDateButton.setBackgroundColor(Color.GRAY);
-
-                dateSelectorCaleder.setVisibility(View.VISIBLE);
-                setVisibilityOfObjectsUnderCalendar(false);
-            }
-        });
-
-
-        toDateButton = findViewById(R.id.toDate);
-        toDateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                isSelectingToDate = true;
-                toDateButton.setBackgroundColor(Color.GREEN);
-
-                isSelectingFromDate = false;
-                fromDateButton.setBackgroundColor(Color.GRAY);
-
-                dateSelectorCaleder.setVisibility(View.VISIBLE);
-                setVisibilityOfObjectsUnderCalendar(false);
-            }
-        });
-
-        dateSelectorCaleder.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
-            @Override
-            public void onSelectedDayChange(@NonNull CalendarView calendarView, int i, int i1, int i2) {
-                if(isSelectingFromDate){
-                    fromDateButton.setText("" + (i1+1) + " / " + i2 + " / "+ i);
-                }else if(isSelectingToDate){
-                    toDateButton.setText("" + (i1+1) + " / " + i2 + " / "+ i);
-                }
-                isSelectingFromDate = false;
-                isSelectingToDate = false;
-
-                fromDateButton.setBackgroundColor(Color.GRAY);
-                toDateButton.setBackgroundColor(Color.GRAY);
-
-                dateSelectorCaleder.setVisibility(View.INVISIBLE);
-                setVisibilityOfObjectsUnderCalendar(true);
-            }
-        });
+        Intent intent = new Intent(this, tabActivity.class);
+        startActivity(intent);
     }
-    void setVisibilityOfObjectsUnderCalendar(boolean b){
-        if(b){
-            findViewById(R.id.Startingat).setVisibility(View.VISIBLE);
-            hourSpinner.setVisibility(View.VISIBLE);
-            minuteSpinner.setVisibility(View.VISIBLE);
-            timeHemisphereSpinner.setVisibility(View.VISIBLE);
-            findViewById(R.id.textView4).setVisibility(View.VISIBLE);
-            frequencySpinner.setVisibility(View.VISIBLE);
-        }else{
-            findViewById(R.id.Startingat).setVisibility(View.GONE);
-            hourSpinner.setVisibility(View.GONE);
-            minuteSpinner.setVisibility(View.GONE);
-            timeHemisphereSpinner.setVisibility(View.GONE);
-            findViewById(R.id.textView4).setVisibility(View.GONE);
-            frequencySpinner.setVisibility(View.GONE);
-        }
-    }
-
 }
-

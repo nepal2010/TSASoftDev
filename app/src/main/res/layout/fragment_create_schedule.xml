@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    tools:context=".createScheduleFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="@string/hello_blank_fragment" />
+
+    <Spinner
+        android:id="@+id/hourDropDown"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_gravity="center_horizontal"
+        android:dropDownWidth="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/minuteDropDown"
+        app:layout_constraintEnd_toEndOf="@+id/space"
+        app:layout_constraintHorizontal_bias="0.355"
+        app:layout_constraintStart_toStartOf="@+id/space"
+        app:layout_constraintTop_toTopOf="@+id/minuteDropDown"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <EditText
+        android:id="@+id/pillTextEdit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="92dp"
+        android:ems="10"
+        android:hint="Type in Pill Name"
+        android:inputType="textPersonName"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Spinner
+        android:id="@+id/AMPMDropDown"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:textAlignment="textEnd"
+        app:layout_constraintBottom_toBottomOf="@+id/minuteDropDown"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.892"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/minuteDropDown"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <Spinner
+        android:id="@+id/minuteDropDown"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_marginTop="76dp"
+        android:textAlignment="textEnd"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.655"
+        app:layout_constraintStart_toStartOf="@+id/space"
+        app:layout_constraintTop_toBottomOf="@+id/space" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=":"
+        app:layout_constraintBottom_toBottomOf="@+id/minuteDropDown"
+        app:layout_constraintEnd_toStartOf="@+id/minuteDropDown"
+        app:layout_constraintStart_toEndOf="@+id/hourDropDown"
+        app:layout_constraintTop_toTopOf="@+id/minuteDropDown" />
+
+    <Space
+        android:id="@+id/space"
+        android:layout_width="fill_parent"
+        android:layout_height="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pillTextEdit" />
+
+
+    <Button
+        android:id="@+id/fromDate"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:text="Select start date"
+        android:textSize="10sp"
+        app:layout_constraintEnd_toStartOf="@+id/space2"
+        app:layout_constraintTop_toTopOf="@+id/space2" />
+
+    <Button
+        android:id="@+id/toDate"
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:text="select end date"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="@+id/fromDate"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.205"
+        app:layout_constraintStart_toEndOf="@+id/space2"
+        app:layout_constraintTop_toTopOf="@+id/fromDate" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="From: "
+        app:layout_constraintBottom_toBottomOf="@+id/fromDate"
+        app:layout_constraintEnd_toStartOf="@+id/fromDate"
+        app:layout_constraintTop_toTopOf="@+id/fromDate"
+        app:layout_constraintVertical_bias="0.62" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="To:   "
+        app:layout_constraintBottom_toBottomOf="@+id/toDate"
+        app:layout_constraintEnd_toStartOf="@+id/toDate"
+        app:layout_constraintTop_toTopOf="@+id/toDate"
+        app:layout_constraintVertical_bias="0.586" />
+
+    <Space
+        android:id="@+id/space2"
+        android:layout_width="10dp"
+        android:layout_height="30dp"
+        app:layout_constraintEnd_toEndOf="@+id/space"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="@+id/space"
+        app:layout_constraintTop_toBottomOf="@+id/space" />
+
+    <Spinner
+        android:id="@+id/frequencySpinner"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.735"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/minuteDropDown" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Every:    "
+        app:layout_constraintBottom_toBottomOf="@+id/frequencySpinner"
+        app:layout_constraintEnd_toStartOf="@+id/frequencySpinner"
+        app:layout_constraintTop_toTopOf="@+id/frequencySpinner" />
+
+    <CalendarView
+        android:id="@+id/caledarView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="36dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.491"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/minuteDropDown"
+        app:layout_constraintVertical_bias="0.758" />
+
+    <TextView
+        android:id="@+id/Startingat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Starting at:   "
+        app:layout_constraintBottom_toBottomOf="@+id/hourDropDown"
+        app:layout_constraintEnd_toStartOf="@+id/hourDropDown"
+        app:layout_constraintTop_toTopOf="@+id/hourDropDown" />
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
