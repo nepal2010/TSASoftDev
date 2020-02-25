@@ -36,10 +36,30 @@
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/view_pager"
-        android:layout_width="409dp"
-        android:layout_height="681dp"
+        android:layout_width="399dp"
+        android:layout_height="332dp"
+        android:background="#BE2121"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tabLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/tabLayout"
+        app:layout_constraintVertical_bias="0.245"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="top"
+        app:layout_constraintBottom_toTopOf="@+id/view_pager"
+        tools:layout_editor_absoluteX="72dp" />
+
+    <TextView
+        android:id="@+id/textView10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        app:layout_constraintTop_toBottomOf="@+id/view_pager"
+        tools:layout_editor_absoluteX="77dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
