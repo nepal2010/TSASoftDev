@@ -3,6 +3,7 @@ package com.example.pillreminder;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
@@ -10,10 +11,12 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CalendarView;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.pillreminder.R;
+import com.google.gson.Gson;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -22,17 +25,20 @@ import java.io.FileWriter;
 public class scheduleActivity extends AppCompatActivity {
     private String mParam1;
     private String mParam2;
+    EditText medication;
     Spinner hourSpinner, minuteSpinner, timeHemisphereSpinner, frequencySpinner = null;
     ArrayAdapter<CharSequence> adapter = null;
     Button fromDateButton, toDateButton,saveButton;
     boolean isSelectingFromDate, isSelectingToDate = false;
     CalendarView dateSelectorCaleder;
-    
-    
+    int startYear, startMonth, startDay, endYear, endMonth, endDay, timeInterval;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_schedule);
+        medication = findViewById(R.id.pillTextEdit);
+
         setUpSpinners();
         setUpCalendar();
         setUpSaveButton();
@@ -152,8 +158,14 @@ public class scheduleActivity extends AppCompatActivity {
             public void onSelectedDayChange(@NonNull CalendarView calendarView, int i, int i1, int i2) {
                 if(isSelectingFromDate){
                     fromDateButton.setText("" + (i1+1) + " / " + i2 + " / "+ i);
+                    startYear = i;
+                    startMonth = i1;
+                    startDay = i2;
                 }else if(isSelectingToDate){
                     toDateButton.setText("" + (i1+1) + " / " + i2 + " / "+ i);
+                    endYear = i;
+                    endMonth = i1;
+                    endDay = i2;
                 }
                 isSelectingFromDate = false;
                 isSelectingToDate = false;
@@ -180,15 +192,61 @@ public class scheduleActivity extends AppCompatActivity {
                 if(!new File(Environment.getExternalStorageDirectory() + "/PillReminder/medicationList.txt").exists()){
                     new File(Environment.getExternalStorageDirectory() + "/PillReminder/medicationList.txt");
                 }
+
+                int startHour = hourSpinner.getSelectedItemPosition() + 1
+                        + 12*timeHemisphereSpinner.getSelectedItemPosition() ;
+                int startMin = minuteSpinner.getSelectedItemPosition()*15;
+                switch (frequencySpinner.getSelectedItemPosition()){
+                    case 0:
+                        timeInterval = 72;
+                        break;
+                    case 1:
+                        timeInterval = 48;
+                        break;
+                    case 2:
+                        timeInterval = 24;
+                        break;
+                    case 3:
+                        timeInterval = 12;
+                        break;
+                    case 4:
+                        timeInterval = 8;
+                        break;
+                    case 5:
+                        timeInterval = 6;
+                        break;
+                    case 6:
+                        timeInterval = 4;
+                        break;
+                    case 7:
+                        timeInterval = 2;
+                        break;
+                    default:
+                        timeInterval=24;
+
+                }
+
+                medication med = new medication(medication.getText().toString(), startYear, startMonth, startDay,
+                        endYear, endMonth, endDay, timeInterval, startHour, startMin);
+                Gson jsonWriter = new Gson();
+
+
+
                 BufferedWriter noteWriter;
                 try {
                     noteWriter = new BufferedWriter(new FileWriter(
                             new File(Environment.getExternalStorageDirectory() + "/PillReminder/medicationList.txt")));
+                    noteWriter.append(jsonWriter.toJson(med));
+                    noteWriter.close();
                 }catch (Exception e){
                     e.printStackTrace();
                 }
-
+                goBackHomeAfterCreatingAPillSchedule();
             }
         });
+    }
+    void goBackHomeAfterCreatingAPillSchedule(){
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 }

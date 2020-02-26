@@ -1,8 +1,13 @@
 package com.example.pillreminder;
 
+import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -34,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         progressButton = findViewById(R.id.progressButton);
 
         setUpImageButtons();
-
+        scheduleNotification(getNotification("5 second delay"), 10);
         if(allPermissionsGranted()){
 
         } else{
@@ -100,45 +105,24 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-}
 
-//public class SectionsPagerAdapter extends FragmentPagerAdapter {
-//
-//    public SectionsPagerAdapter(FragmentManager fm) {
-//        super(fm);
-//    }
-//
-//    @Override
-//    public Fragment getItem(int position) {
-//        Fragment fragment = null;
-//        switch (position) {
-//            case 0:
-//                fragment = new createScheduleFragment();
-//                break;
-//            case 1:
-//                break;ViewPagerAdapter
-//            case 2:
-//                break;
-//        }
-//        return fragment;
-//    }
-//
-//    @Override
-//    public int getCount() {
-//        // Show 3 total pages.
-//        return 3;
-//    }
-//
-//    @Override
-//    public CharSequence getPageTitle(int position) {
-//        switch (position) {
-//            case 0:
-//                return "Fragment 1";
-//            case 1:
-//                return "Fragment 2";
-//            case 2:
-//                return "Fragment 3";
-//        }
-//        return null;
-//    }
-//}
+    private void scheduleNotification(Notification notification, int delay) {
+
+        Intent notificationIntent = new Intent(this, NotificationPublisher.class);
+        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, 1);
+        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION, notification);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        long futureInMillis = SystemClock.elapsedRealtime() + delay;
+        AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
+    }
+
+    private Notification getNotification(String content) {
+        Notification.Builder builder = new Notification.Builder(this);
+        builder.setContentTitle("Scheduled Notification");
+        builder.setContentText(content);
+        builder.setSmallIcon(R.drawable.ic_launcher_background);
+        return builder.build();
+    }
+}
