@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
     ImageButton createScheduleBtn, reviewMedicationButton, progressButton;
     private int REQUEST_CODE_PERMISSIONS = 10; //arbitrary number, can be changed accordingly
     private final String[] REQUIRED_PERMISSIONS = new String[]{"android.permission.WRITE_EXTERNAL_STORAGE",
-            "android.permission.READ_EXTERNAL_STORAGE"}; //array w/ permissions from manifest
+            "android.permission.READ_EXTERNAL_STORAGE", "android.permission.ACCESS_NOTIFICATION_POLICY"}; //array w/ permissions from manifest
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
