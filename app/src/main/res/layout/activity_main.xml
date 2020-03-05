@@ -9,27 +9,35 @@
 
     <ImageButton
         android:id="@+id/reviewScheduleButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:backgroundTint="#00FFFFFF"
+        android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@mipmap/ic_launcher" />
+        app:srcCompat="@drawable/pill" />
 
     <ImageButton
         android:id="@+id/createScheduleButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:adjustViewBounds="true"
+        android:backgroundTint="#00FFFFFF"
+        android:scaleType="fitCenter"
         app:layout_constraintBottom_toTopOf="@+id/reviewScheduleButton"
         app:layout_constraintEnd_toEndOf="@+id/reviewScheduleButton"
         app:layout_constraintStart_toStartOf="@+id/reviewScheduleButton"
-        app:srcCompat="@mipmap/ic_launcher" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/calendar" />
 
     <ImageButton
         android:id="@+id/progressButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/reviewScheduleButton"
         app:layout_constraintStart_toStartOf="@+id/reviewScheduleButton"
         app:layout_constraintTop_toBottomOf="@+id/reviewScheduleButton"

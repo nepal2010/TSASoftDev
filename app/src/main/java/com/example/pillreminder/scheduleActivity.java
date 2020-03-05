@@ -3,10 +3,15 @@ package com.example.pillreminder;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.SystemClock;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -21,6 +26,13 @@ import com.google.gson.Gson;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.sql.Time;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.temporal.ChronoUnit;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 public class scheduleActivity extends AppCompatActivity {
     private String mParam1;
@@ -32,6 +44,8 @@ public class scheduleActivity extends AppCompatActivity {
     boolean isSelectingFromDate, isSelectingToDate = false;
     CalendarView dateSelectorCaleder;
     int startYear, startMonth, startDay, endYear, endMonth, endDay, timeInterval;
+    String name;
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy:MM:dd:HH:mm");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -187,10 +201,11 @@ public class scheduleActivity extends AppCompatActivity {
                 if(!new File(Environment.getExternalStorageDirectory() + "/PillReminder").exists()){
                     File f = new File(Environment.getExternalStorageDirectory() + "/PillReminder");
                     f.mkdir();
-                    Toast.makeText(getBaseContext(), f.getAbsolutePath(), Toast.LENGTH_SHORT).show();
+
                 }
                 if(!new File(Environment.getExternalStorageDirectory() + "/PillReminder/medicationList.txt").exists()){
                     new File(Environment.getExternalStorageDirectory() + "/PillReminder/medicationList.txt");
+                    Toast.makeText(getBaseContext(), "asdf", Toast.LENGTH_SHORT).show();
                 }
 
                 int startHour = hourSpinner.getSelectedItemPosition() + 1
@@ -221,12 +236,15 @@ public class scheduleActivity extends AppCompatActivity {
                     case 7:
                         timeInterval = 2;
                         break;
+                    case 8:
+                        timeInterval = 1;
+                        break;
                     default:
                         timeInterval=24;
 
                 }
-
-                medication med = new medication(medication.getText().toString(), startYear, startMonth, startDay,
+                name = medication.getText().toString();
+                medication med = new medication(name, startYear, startMonth, startDay,
                         endYear, endMonth, endDay, timeInterval, startHour, startMin);
                 Gson jsonWriter = new Gson();
 
@@ -235,18 +253,96 @@ public class scheduleActivity extends AppCompatActivity {
                 BufferedWriter noteWriter;
                 try {
                     noteWriter = new BufferedWriter(new FileWriter(
-                            new File(Environment.getExternalStorageDirectory() + "/PillReminder/medicationList.txt")));
+                           Environment.getExternalStorageDirectory() + "/PillReminder/medicationList.txt", true));
+                    noteWriter.newLine();
                     noteWriter.append(jsonWriter.toJson(med));
                     noteWriter.close();
                 }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+                Date start = new Date(startYear-1900, startMonth, startDay, startHour, startMin);
+                Date end = new Date(endYear-1900, endMonth, endDay, startHour, startMin);
+                try {
+                    Calendar c = findNextPillSpot(start, timeInterval);
+                    Calendar n = Calendar.getInstance();
+                    n.setTime(sdf.parse(sdf.format(new Date())));
+                    Calendar e = Calendar.getInstance();
+                    e.setTime(sdf.parse(sdf.format(end)));
+
+                    Toast.makeText(getBaseContext(), "secs between:" + (int)secondsBetween(c, n), Toast.LENGTH_LONG).show();
+
+                    while(c.before(e)){
+                        int secBetween = (int)secondsBetween(c, n);
+                        scheduleNotification(getNotification("Time to take your " + name), secBetween);
+                        c.add(Calendar.HOUR, timeInterval);
+                        System.out.println("current: " + c.get(Calendar.YEAR)+ "/"+c.get(Calendar.MONTH) + "/" + c.get(Calendar.DATE) + "/" + c.get(Calendar.HOUR) + "/" + c.get(Calendar.MINUTE));
+                        System.out.println("end: " + e.get(Calendar.YEAR)+ "/"+e.get(Calendar.MONTH) + "/" + e.get(Calendar.DATE) + "/" + e.get(Calendar.HOUR) + "/" + e.get(Calendar.MINUTE));
+
+                    }
+
+                } catch (ParseException e) {
                     e.printStackTrace();
                 }
                 goBackHomeAfterCreatingAPillSchedule();
             }
         });
     }
+    public static long secondsBetween(Calendar startDate, Calendar endDate) {
+        long end = endDate.getTimeInMillis();
+        long start = startDate.getTimeInMillis();
+        return TimeUnit.MILLISECONDS.toSeconds(Math.abs(end - start));
+    }
+    Calendar findNextPillSpot(Date start, int dHours) throws ParseException {
+
+        String startTime = sdf.format(start);
+        String nowTime = sdf.format(new Date());
+        System.out.println(startTime);
+        System.out.println(nowTime);
+        Date sDate = null;
+        Date nDate = null;
+
+        try {
+            sDate = sdf.parse(startTime);
+            nDate = sdf.parse(nowTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Calendar nTime = Calendar.getInstance();
+        nTime.setTime(nDate);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(sdf.parse(sdf.format(start)));
+        while(calendar.before(nTime)){
+
+            calendar.add(Calendar.HOUR, dHours);
+
+
+        }
+        return calendar;
+    }
     void goBackHomeAfterCreatingAPillSchedule(){
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
+    }
+    public void scheduleNotification(Notification notification, int delay) {
+
+        Intent notificationIntent = new Intent(getApplicationContext(), NotificationPublisher.class);
+        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, (int)System.currentTimeMillis());
+        notificationIntent.putExtra(NotificationPublisher.NOTIFICATION, notification);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), (int)System.currentTimeMillis(), notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        long futureInMillis = SystemClock.elapsedRealtime() + delay*1000;
+        System.out.println("raw delay: " +  (delay));
+        System.out.println("Minutes until notif: " +  (float)(delay)/60);
+        AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
+    }
+
+    public Notification getNotification(String content) {
+        Notification.Builder builder = new Notification.Builder(getApplicationContext());
+        builder.setContentTitle("Pill Reminder");
+        builder.setContentText(content);
+        builder.setSmallIcon(R.drawable.pill);
+        return builder.build();
     }
 }

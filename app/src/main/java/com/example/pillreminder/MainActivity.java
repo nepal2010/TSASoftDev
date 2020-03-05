@@ -34,20 +34,21 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        createScheduleBtn = findViewById(R.id.createScheduleButton);
-        reviewMedicationButton = findViewById(R.id.reviewScheduleButton);
-        progressButton = findViewById(R.id.progressButton);
 
         setUpImageButtons();
-        scheduleNotification(getNotification("5 second delay"), 10);
+
         if(allPermissionsGranted()){
 
         } else{
             ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS);
         }
-
+//        scheduleNotification(getNotification("Time to take your bleach"), 20);
     }
     void setUpImageButtons(){
+        createScheduleBtn = findViewById(R.id.createScheduleButton);
+        reviewMedicationButton = findViewById(R.id.reviewScheduleButton);
+        progressButton = findViewById(R.id.progressButton);
+
         createScheduleBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -68,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
                 goToProgressActivity();
             }
         });
+
     }
     void goToCreateScheduleActivity(){
         Intent intent = new Intent(this, scheduleActivity.class);
@@ -75,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void goToReviewActivity(){
-        Intent intent = new Intent(this, scheduleActivity.class);
+        Intent intent = new Intent(this, currentMedications.class);
         startActivity(intent);
     }
 
@@ -106,23 +108,25 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void scheduleNotification(Notification notification, int delay) {
+    public void scheduleNotification(Notification notification, int delay) {
 
-        Intent notificationIntent = new Intent(this, NotificationPublisher.class);
+        Intent notificationIntent = new Intent(getApplicationContext(), NotificationPublisher.class);
         notificationIntent.putExtra(NotificationPublisher.NOTIFICATION_ID, 1);
         notificationIntent.putExtra(NotificationPublisher.NOTIFICATION, notification);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), (int)System.currentTimeMillis(), notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         long futureInMillis = SystemClock.elapsedRealtime() + delay;
         AlarmManager alarmManager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
         alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
     }
 
-    private Notification getNotification(String content) {
-        Notification.Builder builder = new Notification.Builder(this);
+    public Notification getNotification(String content) {
+        Notification.Builder builder = new Notification.Builder(getApplicationContext());
         builder.setContentTitle("Scheduled Notification");
         builder.setContentText(content);
         builder.setSmallIcon(R.drawable.ic_launcher_background);
         return builder.build();
     }
+
+
 }
