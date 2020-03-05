@@ -12,12 +12,16 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.SystemClock;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.pillreminder.R;
@@ -41,9 +45,9 @@ public class scheduleActivity extends AppCompatActivity {
     Spinner hourSpinner, minuteSpinner, timeHemisphereSpinner, frequencySpinner = null;
     ArrayAdapter<CharSequence> adapter = null;
     Button fromDateButton, toDateButton,saveButton;
-    boolean isSelectingFromDate, isSelectingToDate = false;
+    boolean isSelectingFromDate, isSelectingToDate = false, isValidDate;
     CalendarView dateSelectorCaleder;
-    int startYear, startMonth, startDay, endYear, endMonth, endDay, timeInterval;
+    int startYear = 0, startMonth, startDay, endYear = 0, endMonth, endDay, timeInterval;
     String name;
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy:MM:dd:HH:mm");
 
@@ -52,7 +56,7 @@ public class scheduleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_schedule);
         medication = findViewById(R.id.pillTextEdit);
-
+        medication.setOnEditorActionListener(new DoneOnEditorActionListener());
         setUpSpinners();
         setUpCalendar();
         setUpSaveButton();
@@ -140,6 +144,9 @@ public class scheduleActivity extends AppCompatActivity {
         fromDateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                InputMethodManager imm = (InputMethodManager)getBaseContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(fromDateButton.getWindowToken(), 0);
+
                 isSelectingFromDate = true;
                 fromDateButton.setBackgroundColor(Color.GREEN);
 
@@ -152,10 +159,14 @@ public class scheduleActivity extends AppCompatActivity {
         });
 
 
+
         toDateButton = findViewById(R.id.toDate);
         toDateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                InputMethodManager imm = (InputMethodManager)getBaseContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(toDateButton.getWindowToken(), 0);
+
                 isSelectingToDate = true;
                 toDateButton.setBackgroundColor(Color.GREEN);
 
@@ -183,10 +194,17 @@ public class scheduleActivity extends AppCompatActivity {
                 }
                 isSelectingFromDate = false;
                 isSelectingToDate = false;
-
-                fromDateButton.setBackgroundColor(Color.GRAY);
-                toDateButton.setBackgroundColor(Color.GRAY);
-
+                if(startDay!=0 && endYear != 0) {
+                    if(isBefore(startYear, startMonth, startDay, endYear, endMonth, endDay)) {
+                        fromDateButton.setBackgroundColor(Color.GREEN);
+                        toDateButton.setBackgroundColor(Color.GREEN);
+                        isValidDate = true;
+                    }else{
+                        fromDateButton.setBackgroundColor(Color.GREEN);
+                        toDateButton.setBackgroundColor(Color.RED);
+                        isValidDate = false;
+                    }
+                }
                 dateSelectorCaleder.setVisibility(View.INVISIBLE);
                 setVisibilityOfObjectsUnderCalendar(true);
             }
@@ -198,93 +216,98 @@ public class scheduleActivity extends AppCompatActivity {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!new File(Environment.getExternalStorageDirectory() + "/PillReminder").exists()){
-                    File f = new File(Environment.getExternalStorageDirectory() + "/PillReminder");
-                    f.mkdir();
-
-                }
-                if(!new File(Environment.getExternalStorageDirectory() + "/PillReminder/medicationList.txt").exists()){
-                    new File(Environment.getExternalStorageDirectory() + "/PillReminder/medicationList.txt");
-                    Toast.makeText(getBaseContext(), "asdf", Toast.LENGTH_SHORT).show();
-                }
-
-                int startHour = hourSpinner.getSelectedItemPosition() + 1
-                        + 12*timeHemisphereSpinner.getSelectedItemPosition() ;
-                int startMin = minuteSpinner.getSelectedItemPosition()*15;
-                switch (frequencySpinner.getSelectedItemPosition()){
-                    case 0:
-                        timeInterval = 72;
-                        break;
-                    case 1:
-                        timeInterval = 48;
-                        break;
-                    case 2:
-                        timeInterval = 24;
-                        break;
-                    case 3:
-                        timeInterval = 12;
-                        break;
-                    case 4:
-                        timeInterval = 8;
-                        break;
-                    case 5:
-                        timeInterval = 6;
-                        break;
-                    case 6:
-                        timeInterval = 4;
-                        break;
-                    case 7:
-                        timeInterval = 2;
-                        break;
-                    case 8:
-                        timeInterval = 1;
-                        break;
-                    default:
-                        timeInterval=24;
-
-                }
-                name = medication.getText().toString();
-                medication med = new medication(name, startYear, startMonth, startDay,
-                        endYear, endMonth, endDay, timeInterval, startHour, startMin);
-                Gson jsonWriter = new Gson();
-
-
-
-                BufferedWriter noteWriter;
-                try {
-                    noteWriter = new BufferedWriter(new FileWriter(
-                           Environment.getExternalStorageDirectory() + "/PillReminder/medicationList.txt", true));
-                    noteWriter.newLine();
-                    noteWriter.append(jsonWriter.toJson(med));
-                    noteWriter.close();
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-
-                Date start = new Date(startYear-1900, startMonth, startDay, startHour, startMin);
-                Date end = new Date(endYear-1900, endMonth, endDay, startHour, startMin);
-                try {
-                    Calendar c = findNextPillSpot(start, timeInterval);
-                    Calendar n = Calendar.getInstance();
-                    n.setTime(sdf.parse(sdf.format(new Date())));
-                    Calendar e = Calendar.getInstance();
-                    e.setTime(sdf.parse(sdf.format(end)));
-
-                    Toast.makeText(getBaseContext(), "secs between:" + (int)secondsBetween(c, n), Toast.LENGTH_LONG).show();
-
-                    while(c.before(e)){
-                        int secBetween = (int)secondsBetween(c, n);
-                        scheduleNotification(getNotification("Time to take your " + name), secBetween);
-                        c.add(Calendar.HOUR, timeInterval);
-                        System.out.println("current: " + c.get(Calendar.YEAR)+ "/"+c.get(Calendar.MONTH) + "/" + c.get(Calendar.DATE) + "/" + c.get(Calendar.HOUR) + "/" + c.get(Calendar.MINUTE));
-                        System.out.println("end: " + e.get(Calendar.YEAR)+ "/"+e.get(Calendar.MONTH) + "/" + e.get(Calendar.DATE) + "/" + e.get(Calendar.HOUR) + "/" + e.get(Calendar.MINUTE));
+                if(isValidDate) {
+                    if (!new File(Environment.getExternalStorageDirectory() + "/PillReminder").exists()) {
+                        File f = new File(Environment.getExternalStorageDirectory() + "/PillReminder");
+                        f.mkdir();
 
                     }
+                    if (!new File(Environment.getExternalStorageDirectory() + "/PillReminder/medicationList.txt").exists()) {
+                        new File(Environment.getExternalStorageDirectory() + "/PillReminder/medicationList.txt");
+                        Toast.makeText(getBaseContext(), "asdf", Toast.LENGTH_SHORT).show();
+                    }
 
-                } catch (ParseException e) {
-                    e.printStackTrace();
+                    int startHour = hourSpinner.getSelectedItemPosition() + 1
+                            + 12 * timeHemisphereSpinner.getSelectedItemPosition();
+                    int startMin = minuteSpinner.getSelectedItemPosition() * 15;
+                    switch (frequencySpinner.getSelectedItemPosition()) {
+                        case 0:
+                            timeInterval = 72;
+                            break;
+                        case 1:
+                            timeInterval = 48;
+                            break;
+                        case 2:
+                            timeInterval = 24;
+                            break;
+                        case 3:
+                            timeInterval = 12;
+                            break;
+                        case 4:
+                            timeInterval = 8;
+                            break;
+                        case 5:
+                            timeInterval = 6;
+                            break;
+                        case 6:
+                            timeInterval = 4;
+                            break;
+                        case 7:
+                            timeInterval = 2;
+                            break;
+                        case 8:
+                            timeInterval = 1;
+                            break;
+                        default:
+                            timeInterval = 24;
+
+                    }
+                    name = medication.getText().toString();
+                    medication med = new medication(name, startYear, startMonth, startDay,
+                            endYear, endMonth, endDay, timeInterval, startHour, startMin);
+                    Gson jsonWriter = new Gson();
+
+
+                    BufferedWriter noteWriter;
+                    try {
+                        noteWriter = new BufferedWriter(new FileWriter(
+                                Environment.getExternalStorageDirectory() + "/PillReminder/medicationList.txt", true));
+                        noteWriter.newLine();
+                        noteWriter.append(jsonWriter.toJson(med));
+                        noteWriter.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    Date start = new Date(startYear - 1900, startMonth, startDay, startHour, startMin);
+                    Date end = new Date(endYear - 1900, endMonth, endDay, startHour, startMin);
+                    try {
+                        Calendar c = findNextPillSpot(start, timeInterval);
+                        Calendar n = Calendar.getInstance();
+                        n.setTime(sdf.parse(sdf.format(new Date())));
+                        Calendar e = Calendar.getInstance();
+                        e.setTime(sdf.parse(sdf.format(end)));
+
+
+
+                        while (c.before(e)) {
+                            int secBetween = (int) secondsBetween(c, n);
+                            scheduleNotification(getNotification("Time to take your " + name), secBetween);
+                            c.add(Calendar.HOUR, timeInterval);
+                            System.out.println("current: " + c.get(Calendar.YEAR) + "/" + c.get(Calendar.MONTH) + "/" + c.get(Calendar.DATE) + "/" + c.get(Calendar.HOUR) + "/" + c.get(Calendar.MINUTE));
+                            System.out.println("end: " + e.get(Calendar.YEAR) + "/" + e.get(Calendar.MONTH) + "/" + e.get(Calendar.DATE) + "/" + e.get(Calendar.HOUR) + "/" + e.get(Calendar.MINUTE));
+                            wait(10);
+                        }
+
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    goBackHomeAfterCreatingAPillSchedule();
+                }else{
+                    Toast.makeText(getBaseContext(), "End Date is before Start Date" , Toast.LENGTH_LONG).show();
                 }
-                goBackHomeAfterCreatingAPillSchedule();
             }
         });
     }
@@ -344,5 +367,38 @@ public class scheduleActivity extends AppCompatActivity {
         builder.setContentText(content);
         builder.setSmallIcon(R.drawable.pill);
         return builder.build();
+    }
+
+    boolean isBefore(int startYear, int startMonth, int startDay, int endYear, int endMonth, int endDay){
+        if(startYear<endYear){
+            return true;
+        }else if(startYear==endYear){
+            if(startMonth < endMonth){
+                return true;
+            }else if(startMonth == endMonth){
+                if(startDay < endDay){
+                    return true;
+                }else{
+                    return false;
+                }
+            }else{
+                return false;
+            }
+        }else{
+            return false;
+        }
+
+    }
+}
+
+class DoneOnEditorActionListener implements TextView.OnEditorActionListener {
+    @Override
+    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        if (actionId == EditorInfo.IME_ACTION_DONE) {
+            InputMethodManager imm = (InputMethodManager)v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+            return true;
+        }
+        return false;
     }
 }
