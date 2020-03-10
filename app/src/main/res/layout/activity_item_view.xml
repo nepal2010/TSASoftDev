@@ -10,8 +10,8 @@
         android:id="@+id/pillNameTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:text="Pill Name"
         android:textSize="30sp"
         app:layout_constraintStart_toStartOf="parent"
@@ -29,26 +29,29 @@
         android:id="@+id/eendDateTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:text="EndDate"
-        app:layout_constraintBottom_toBottomOf="@+id/pillNameTextView"
-        app:layout_constraintStart_toStartOf="@+id/space4" />
+        app:layout_constraintBottom_toTopOf="@+id/space3"
+        app:layout_constraintStart_toStartOf="@+id/space4"
+        app:layout_constraintTop_toBottomOf="@+id/startDateTextView" />
 
     <TextView
         android:id="@+id/frequencyTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="28dp"
         android:text="Frequency"
         android:textAlignment="textEnd"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/startDateTextView" />
+        app:layout_constraintTop_toTopOf="@+id/eendDateTextView" />
 
     <Space
         android:id="@+id/space3"
         android:layout_width="match_parent"
         android:layout_height="20dp"
+        android:layout_marginTop="52dp"
         app:layout_constraintTop_toBottomOf="@+id/pillNameTextView"
-        tools:layout_editor_absoluteX="238dp" />
+        tools:layout_editor_absoluteX="0dp" />
 
     <Space
         android:id="@+id/space4"
@@ -57,4 +60,27 @@
         app:layout_constraintBottom_toTopOf="@+id/space3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/space3" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:progressBarStyleHorizontal"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:progress="80"
+        android:progressDrawable="@drawable/ring"
+        app:layout_constraintBottom_toBottomOf="@+id/space3"
+        app:layout_constraintEnd_toStartOf="@+id/space4"
+        app:layout_constraintHorizontal_bias="0.102"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pillNameTextView" />
+
+    <Button
+        android:id="@+id/removePillBtn"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:text="X"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -224,8 +224,8 @@ public class scheduleActivity extends AppCompatActivity {
                     }
                     if (!new File(Environment.getExternalStorageDirectory() + "/PillReminder/medicationList.txt").exists()) {
                         new File(Environment.getExternalStorageDirectory() + "/PillReminder/medicationList.txt");
-                        Toast.makeText(getBaseContext(), "asdf", Toast.LENGTH_SHORT).show();
                     }
+
 
                     int startHour = hourSpinner.getSelectedItemPosition() + 1
                             + 12 * timeHemisphereSpinner.getSelectedItemPosition();
@@ -296,12 +296,10 @@ public class scheduleActivity extends AppCompatActivity {
                             c.add(Calendar.HOUR, timeInterval);
                             System.out.println("current: " + c.get(Calendar.YEAR) + "/" + c.get(Calendar.MONTH) + "/" + c.get(Calendar.DATE) + "/" + c.get(Calendar.HOUR) + "/" + c.get(Calendar.MINUTE));
                             System.out.println("end: " + e.get(Calendar.YEAR) + "/" + e.get(Calendar.MONTH) + "/" + e.get(Calendar.DATE) + "/" + e.get(Calendar.HOUR) + "/" + e.get(Calendar.MINUTE));
-                            wait(10);
+
                         }
 
                     } catch (ParseException e) {
-                        e.printStackTrace();
-                    } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                     goBackHomeAfterCreatingAPillSchedule();
